@@ -1,4 +1,4 @@
-package com.southnanami.bika.bika
+package com.southnanami.bika
 
 import io.flutter.embedding.android.FlutterActivity
 
