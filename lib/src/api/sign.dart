@@ -51,7 +51,7 @@ class SignatureTool {
   // Main method to calculate HMAC-SHA256
   Future<String?> sign(String str) async {
     const String keyString =
-        r"~d}$Q7$eIni=V)9\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn";
+        r"~d}$Q7$eIni=V)9\\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn";
     final keyBytes = utf8.encode(keyString); // Convert key string to bytes
 
     // Convert input string to lowercase
