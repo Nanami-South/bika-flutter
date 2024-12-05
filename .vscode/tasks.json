@@ -1,0 +1,32 @@
+{
+    // 通过 Ctrl + Shift + P 选择 Tasks:Run Task 选择调用
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Generate .g.dart files for JSON",
+        "type": "shell",  // 使用 shell 类型
+        "command": "dart",  // 命令是 dart
+        "args": [
+          "run", 
+          "build_runner", 
+          "build",
+          "lib/", // 只处理 lib 目录下的文件
+          "--delete-conflicting-outputs"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "presentation": {
+          "echo": true,  // 显示命令
+          "reveal": "always",  // 每次任务执行时都显示终端
+          "focus": true,  // 执行时聚焦终端
+          "panel": "shared",  // 共享面板
+          "showReuseMessage": true,  // 显示重用信息
+          "clear": false  // 不清除日志
+        },
+        "problemMatcher": [],
+        "detail": "Generate .g.dart files for json_serializable"
+      }
+    ]
+}

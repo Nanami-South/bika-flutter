@@ -1,0 +1,11 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Flutter: Debug",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart" // 指定启动的入口, 这样可以直接F5运行而不需要当前窗口在 main.dart 文件
+        }
+    ]
+}

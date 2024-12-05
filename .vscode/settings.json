@@ -12,7 +12,7 @@
 		"editor.formatOnType": true,
 
 		// Draw a guide line at 80 characters, where Dart's formatting will wrap code.
-		"editor.rulers": [80],
+		// "editor.rulers": [80],
 
 		// Disables built-in highlighting of words that match your selection. Without
 		// this, all instances of the selected text will be highlighted, interfering
@@ -28,5 +28,24 @@
 		// This results in code completion suggesting words when editing comments and
 		// strings. This setting will prevent that.
 		"editor.wordBasedSuggestions": "off",
-	}
+	},
+	"[json]": {
+		"editor.formatOnSave": true,
+    	"editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+	"[yaml]": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[js]": {
+		"editor.formatOnSave": true,
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"files.exclude": {
+    	"**/.git": true,
+		"**/.dart_tool": true,
+		"**/.idea": true,
+	},
+	"java.configuration.updateBuildConfiguration": "interactive",
+
 }
