@@ -16,10 +16,10 @@ class NoticeWidgetState extends State<NoticeWidget> {
       appBar: AppBar(
         title: const Text('Notice'),
         centerTitle: true,
-        backgroundColor: bgColor(context),
-        surfaceTintColor: bgColor(context),
+        backgroundColor: AppColors.backgroundColor(context),
+        surfaceTintColor: AppColors.backgroundColor(context),
       ),
-      backgroundColor: bgColor(context),
+      backgroundColor: AppColors.backgroundColor(context),
       body: const Text('Notice page body'),
     );
   }

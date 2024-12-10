@@ -16,10 +16,10 @@ class GameWidgetState extends State<GameWidget> {
       appBar: AppBar(
         title: const Text('Game'),
         centerTitle: true,
-        backgroundColor: bgColor(context),
-        surfaceTintColor: bgColor(context),
+        backgroundColor: AppColors.backgroundColor(context),
+        surfaceTintColor: AppColors.backgroundColor(context),
       ),
-      backgroundColor: bgColor(context),
+      backgroundColor: AppColors.backgroundColor(context),
       body: const Text('Game page body'),
     );
   }

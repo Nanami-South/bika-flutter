@@ -16,10 +16,10 @@ class SearchWidgetState extends State<SearchWidget> {
       appBar: AppBar(
         title: const Text('Search'),
         centerTitle: true,
-        backgroundColor: bgColor(context),
-        surfaceTintColor: bgColor(context),
+        backgroundColor: AppColors.backgroundColor(context),
+        surfaceTintColor: AppColors.backgroundColor(context),
       ),
-      backgroundColor: bgColor(context),
+      backgroundColor: AppColors.backgroundColor(context),
       body: const Text('Search page body'),
     );
   }

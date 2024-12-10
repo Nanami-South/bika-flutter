@@ -14,10 +14,10 @@ class LoginWidget extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Login Page'),
         centerTitle: true,
-        backgroundColor: bgColor(context),
-        surfaceTintColor: bgColor(context),
+        backgroundColor: AppColors.backgroundColor(context),
+        surfaceTintColor: AppColors.backgroundColor(context),
       ),
-      backgroundColor: bgColor(context),
+      backgroundColor: AppColors.backgroundColor(context),
       body: const LoginBodyWidget(),
     );
   }

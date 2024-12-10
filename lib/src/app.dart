@@ -8,14 +8,14 @@ import 'package:bika/src/views/home.dart';
 
 final GlobalKey<NavigatorState> gNavigatorKey = GlobalKey<NavigatorState>();
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class BikaApp extends StatefulWidget {
+  const BikaApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<BikaApp> createState() => _BikaAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _BikaAppState extends State<BikaApp> {
   late Widget _home;
 
   @override
@@ -34,8 +34,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Bika Flutter',
       navigatorKey: gNavigatorKey,
-      theme: getLightTheme(),
-      darkTheme: getDarkTheme(),
+      theme: AppColors.lightTheme(),
+      darkTheme: AppColors.darkTheme(),
       themeMode: ThemeMode.system,
       onGenerateRoute: (RouteSettings routeSettings) {
         return MaterialPageRoute<void>(

@@ -16,10 +16,10 @@ class SettingWidgetState extends State<SettingWidget> {
       appBar: AppBar(
         title: const Text('Setting'),
         centerTitle: true,
-        backgroundColor: bgColor(context),
-        surfaceTintColor: bgColor(context),
+        backgroundColor: AppColors.backgroundColor(context),
+        surfaceTintColor: AppColors.backgroundColor(context),
       ),
-      backgroundColor: bgColor(context),
+      backgroundColor: AppColors.backgroundColor(context),
       body: const Text('Setting page body'),
     );
   }

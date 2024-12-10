@@ -74,8 +74,7 @@ class Account with ChangeNotifier {
     if (_currentAccount == null) {
       return false;
     }
-    return _currentAccount!.token != null &&
-        _currentAccount!.token!.isNotEmpty == true;
+    return _currentAccount!.token != null && _currentAccount!.token!.isNotEmpty;
   }
 
   void login(AccountData account) {

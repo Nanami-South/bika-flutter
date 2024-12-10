@@ -35,5 +35,5 @@ void main() async {
 
   await beforeRunApp();
 
-  runApp(const MyApp());
+  runApp(const BikaApp());
 }

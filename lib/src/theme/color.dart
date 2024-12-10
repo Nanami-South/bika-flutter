@@ -18,37 +18,76 @@ class AppColors {
   static const Color darkSecondary = Color(0xFF666666);
   static const Color darkOnSecondary = Color(0xFF2D2D2D);
   static const Color darkOnSurface = Color(0xFFFFFFFF);
-}
 
-Color bgColor(BuildContext context) {
-  return Theme.of(context).brightness == Brightness.dark
-      ? AppColors.darkBackground
-      : AppColors.lightBackground;
-}
+  static Color backgroundColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? AppColors.darkBackground
+        : AppColors.lightBackground;
+  }
 
-ThemeData getLightTheme() {
-  return ThemeData(
-    brightness: Brightness.light,
-    primaryColor: AppColors.lightPrimary,
-    colorScheme: const ColorScheme.light(
-      primary: AppColors.lightPrimary,
-      onPrimary: AppColors.lightOnPrimary,
-      secondary: AppColors.lightSecondary,
-      onSecondary: AppColors.lightOnSecondary,
-      surface: AppColors.lightSurface,
-      onSurface: AppColors.lightOnSurface,
-    ),
-  );
-}
+  static Color primaryColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? AppColors.darkPrimary
+        : AppColors.lightPrimary;
+  }
 
-ThemeData getDarkTheme() {
-  return ThemeData(
-    brightness: Brightness.dark,
-    primaryColor: AppColors.darkPrimary,
-    colorScheme: const ColorScheme.dark(
-      primary: AppColors.darkPrimary,
-      secondary: AppColors.darkSecondary,
-      surface: AppColors.darkSurface,
-    ),
-  );
+  static Color onPrimaryColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? AppColors.darkOnPrimary
+        : AppColors.lightOnPrimary;
+  }
+
+  static Color secondaryColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? AppColors.darkSecondary
+        : AppColors.lightSecondary;
+  }
+
+  static Color onSecondaryColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? AppColors.darkOnSecondary
+        : AppColors.lightOnSecondary;
+  }
+
+  static Color surfaceColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? AppColors.darkSurface
+        : AppColors.lightSurface;
+  }
+
+  static Color onSurfaceColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? AppColors.darkOnSurface
+        : AppColors.lightOnSurface;
+  }
+
+  static ThemeData lightTheme() {
+    return ThemeData(
+      brightness: Brightness.light,
+      primaryColor: AppColors.lightPrimary,
+      colorScheme: const ColorScheme.light(
+        primary: AppColors.lightPrimary,
+        onPrimary: AppColors.lightOnPrimary,
+        secondary: AppColors.lightSecondary,
+        onSecondary: AppColors.lightOnSecondary,
+        surface: AppColors.lightSurface,
+        onSurface: AppColors.lightOnSurface,
+      ),
+    );
+  }
+
+  static ThemeData darkTheme() {
+    return ThemeData(
+      brightness: Brightness.dark,
+      primaryColor: AppColors.darkPrimary,
+      colorScheme: const ColorScheme.dark(
+        primary: AppColors.darkPrimary,
+        onPrimary: AppColors.darkOnPrimary,
+        secondary: AppColors.darkSecondary,
+        onSecondary: AppColors.darkOnSecondary,
+        surface: AppColors.darkSurface,
+        onSurface: AppColors.darkOnSurface,
+      ),
+    );
+  }
 }

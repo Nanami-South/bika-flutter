@@ -94,9 +94,8 @@ class _HomeWidgetState extends State<HomeWidget> {
           }
         },
         child: Container(
-          color: isSelected
-              ? Theme.of(context).colorScheme.primary
-              : Colors.transparent,
+          color:
+              isSelected ? AppColors.primaryColor(context) : Colors.transparent,
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -105,16 +104,16 @@ class _HomeWidgetState extends State<HomeWidget> {
                 Icon(type.icon,
                     size: 30,
                     color: isSelected
-                        ? Theme.of(context).colorScheme.onPrimary
-                        : Theme.of(context).colorScheme.onSurface),
+                        ? AppColors.onPrimaryColor(context)
+                        : AppColors.onSurfaceColor(context)),
                 Text(
                   type.displayName,
                   style: TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w700,
                       color: isSelected
-                          ? Theme.of(context).colorScheme.onPrimary
-                          : Theme.of(context).colorScheme.onSurface),
+                          ? AppColors.onPrimaryColor(context)
+                          : AppColors.onSurfaceColor(context)),
                 ),
               ],
             ),
@@ -151,7 +150,7 @@ class _HomeWidgetState extends State<HomeWidget> {
             .toList();
         return BottomAppBar(
           padding: EdgeInsets.zero, // 去掉默认的padding
-          color: bgColor(context),
+          color: AppColors.backgroundColor(context),
           height: 50,
           child: Row(
             children: bottomBarItems,
