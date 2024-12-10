@@ -2,10 +2,20 @@ import 'package:bika/src/model/account.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:logger/logger.dart';
 import 'src/app.dart';
+import 'src/svc/logger.dart';
 
 Future<void> beforeRunApp() async {
+  // init logger
+  if (kDebugMode) {
+    Logger.level = Level.debug;
+    BikaLogger().d('logger level set to DEBUG');
+  } else {
+    Logger.level = Level.warning;
+    BikaLogger().w('logger level set to WARNING');
+  }
+
   // init some data
   await Account.shared.init();
 }

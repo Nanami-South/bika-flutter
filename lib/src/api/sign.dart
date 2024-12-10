@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:bika/src/svc/logger.dart';
 import 'package:crypto/crypto.dart';
 
 class SignatureTool {
@@ -43,7 +44,7 @@ class SignatureTool {
 
       return sb.toString();
     } catch (e) {
-      print(e); // Handle any exceptions
+      BikaLogger().e(e.toString());
       return null;
     }
   }

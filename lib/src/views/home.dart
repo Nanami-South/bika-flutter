@@ -197,9 +197,8 @@ class _HomeWidgetState extends State<HomeWidget> {
         ChangeNotifierProvider(create: (context) => Account.shared),
       ],
       child: Consumer<Account>(builder: (context, account, child) {
-        if (account.currentAccount == null ||
-            account.currentAccount?.token == null ||
-            account.currentAccount?.token?.isEmpty == true) {
+        if (!account.isValidLogin()) {
+          // 本地没有登陆的token状态，退出到登陆页面
           return const Scaffold(body: LoginWidget());
         }
         return Scaffold(

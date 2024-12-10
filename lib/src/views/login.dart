@@ -115,11 +115,12 @@ class _LoginWidgetState extends State<LoginBodyWidget> {
                     return;
                   }
                   final token = await LoginApi.login(username, password);
-                  Account.shared.currentAccount = AccountData(
+                  final account = AccountData(
                     userName: username,
                     password: password,
                     token: token,
                   );
+                  Account.shared.login(account);
                   if (mounted) {
                     if (Navigator.of(context).canPop()) {
                       Navigator.of(context).pop();

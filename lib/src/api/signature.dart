@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:uuid/uuid.dart';
+import 'package:bika/src/svc/logger.dart';
 
 class SignatureTool {
   static const List<String> charTable = [
@@ -35,7 +36,7 @@ class SignatureTool {
       final hmac = Hmac(sha256, keyBytes);
       return hmac.convert(dataBytes).toString();
     } catch (e) {
-      print(e);
+      BikaLogger().e(e);
       return null;
     }
   }
