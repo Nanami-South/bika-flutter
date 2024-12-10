@@ -1,5 +1,20 @@
+import 'package:bika/src/api/client.dart';
+
 class LoginApi {
-  static Future<void> login(String username, String password) async {
-    print("Invoke login api");
+  static Future<String> login(String username, String password) async {
+    final response = await HttpClient.login(username, password);
+    if (response.code != 200) {
+      throw Exception(response.message);
+    }
+    if (response.data?.token == null) {
+      throw Exception('token is null');
+    }
+    return response.data?.token ?? '';
+  }
+
+  static Future<void> fetchServerInfo() async {
+    final response = await HttpClient.init();
+    //{"status":"ok","addresses":["104.20.180.50","104.20.181.50"],"waka":"https://ad-channel.diwodiwo.xyz","adKeyword":"diwodiwo"}
+    print(response.data?.addresses);
   }
 }
