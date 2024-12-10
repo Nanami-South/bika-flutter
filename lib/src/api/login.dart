@@ -12,9 +12,9 @@ class LoginApi {
     return response.data?.token ?? '';
   }
 
-  static Future<void> fetchServerInfo() async {
-    final response = await HttpClient.init();
-    //{"status":"ok","addresses":["104.20.180.50","104.20.181.50"],"waka":"https://ad-channel.diwodiwo.xyz","adKeyword":"diwodiwo"}
-    print(response.data?.addresses);
-  }
+  // static Future<void> nodeinfo() async {
+  //   final response = await HttpClient.nodeinfo();
+  //   //{"status":"ok","addresses":["104.20.180.50","104.20.181.50"],"waka":"https://ad-channel.diwodiwo.xyz","adKeyword":"diwodiwo"}
+  //   print(response.data?.addresses);
+  // }
 }
