@@ -2,10 +2,21 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'base.g.dart';
 
+class EmptyData {
+  const EmptyData();
+
+  factory EmptyData.fromJson(Map<String, dynamic> json) => const EmptyData();
+
+  Map<String, dynamic> toJson() => {};
+}
+
 @JsonSerializable(genericArgumentFactories: true)
 class ApiResponse<T> {
   @JsonKey(name: 'code')
   final int code;
+
+  @JsonKey(name: 'error')
+  final String? error;
 
   @JsonKey(name: 'message')
   final String message;
@@ -13,7 +24,11 @@ class ApiResponse<T> {
   @JsonKey(name: 'data')
   final T? data;
 
-  ApiResponse(this.code, this.message, this.data);
+  ApiResponse(this.code, this.error, this.message, this.data);
+
+  bool isTokenExpired() {
+    return code == 401 && error == ErrorCode.tokenExpired.value;
+  }
 
   // A necessary factory constructor for creating a new instance
   factory ApiResponse.fromJson(
@@ -25,39 +40,41 @@ class ApiResponse<T> {
       _$ApiResponseToJson(this, toJsonT);
 }
 
-enum ResponseCode {
-  invalidBase64Image(1002),
-  wrongAccountOrPassword(1004),
-  tokenExpired(1005),
-  notFound(1007),
-  emailAlreadyExist(1008),
-  nameAlreadyExist(1009),
-  comicReviewing(1014),
-  cannotComment(1019),
-  higherLevelIsRequired(1031);
+typedef ApiResponseEmptyData = ApiResponse<EmptyData>;
 
-  final int value;
-  const ResponseCode(this.value);
+enum ErrorCode {
+  invalidBase64Image("1002"),
+  wrongAccountOrPassword("1004"),
+  tokenExpired("1005"),
+  notFound("1007"),
+  emailAlreadyExist("1008"),
+  nameAlreadyExist("1009"),
+  comicReviewing("1014"),
+  cannotComment("1019"),
+  higherLevelIsRequired("1031");
+
+  final String value;
+  const ErrorCode(this.value);
 
   String display() {
     switch (this) {
-      case ResponseCode.invalidBase64Image:
+      case ErrorCode.invalidBase64Image:
         return '无效的base64图像';
-      case ResponseCode.wrongAccountOrPassword:
+      case ErrorCode.wrongAccountOrPassword:
         return '账号或密码错误';
-      case ResponseCode.tokenExpired:
+      case ErrorCode.tokenExpired:
         return '登陆状态过期';
-      case ResponseCode.notFound:
+      case ErrorCode.notFound:
         return '找不到数据';
-      case ResponseCode.emailAlreadyExist:
+      case ErrorCode.emailAlreadyExist:
         return '邮箱已存在';
-      case ResponseCode.nameAlreadyExist:
+      case ErrorCode.nameAlreadyExist:
         return '名称已存在';
-      case ResponseCode.comicReviewing:
+      case ErrorCode.comicReviewing:
         return '漫画审核中';
-      case ResponseCode.cannotComment:
+      case ErrorCode.cannotComment:
         return '无法发表评论';
-      case ResponseCode.higherLevelIsRequired:
+      case ErrorCode.higherLevelIsRequired:
         return '评论等级不够';
       default:
         return '未知错误: $value';

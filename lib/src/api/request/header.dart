@@ -4,15 +4,16 @@ import './signature.dart';
 class AppHeaderBuilder {
   static const _apiKey = "C69BAF41DA5ABD1FFEDC6D2FEA56B";
   static Future<Map<String, String>> completeAppHeaders(
-      String route,
+      String routeAndQuery,
       RequestMethod method,
       String? token,
       Map<String, String>? extraHeaders) async {
+    // 比如 http://1.1.1.1/xxx/yyy?q=1 这里 routeAndQuery 是 xxx/yyy?q=1, queryParams 部分也是要参与签名计算的
     int timestampInSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final timestamp = timestampInSeconds.toString();
     final nonce = await SignatureTool.generateNonce();
     final methodStr = method.value;
-    final toSign = route + timestamp + nonce + methodStr + _apiKey;
+    final toSign = routeAndQuery + timestamp + nonce + methodStr + _apiKey;
     final signature = await SignatureTool.sign(toSign);
     var headers = {
       "api-key": _apiKey,

@@ -23,18 +23,22 @@ class _CategoryGridState extends State<CategoryGrid> {
     try {
       final c = await SearchPageApi.categories();
       if (c != null) {
-        setState(() {
-          _categories = c.categories;
-        });
+        if (mounted) {
+          setState(() {
+            _categories = c.categories;
+          });
+        }
       } else {
         BikaLogger().e('categories is null');
       }
     } catch (e) {
       BikaLogger().e(e.toString());
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 

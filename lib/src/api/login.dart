@@ -1,5 +1,5 @@
-import 'package:bika/src/api/client.dart';
-import 'package:bika/src/api/response/login.dart';
+import 'client.dart';
+import 'response/login.dart';
 
 class LoginApi {
   static Future<String> login(String username, String password) async {

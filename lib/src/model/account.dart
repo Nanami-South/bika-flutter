@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:async';
-
+import 'package:synchronized/synchronized.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -82,9 +82,18 @@ class Account with ChangeNotifier {
     accountEventController.add(AccountEvent.login);
   }
 
+  final _lock = Lock();
   void logout() {
-    currentAccount = null;
-    accountEventController.add(AccountEvent.logout);
+    if (currentAccount == null) {
+      return;
+    }
+    _lock.synchronized(() {
+      if (currentAccount == null) {
+        return;
+      }
+      currentAccount = null;
+      accountEventController.add(AccountEvent.logout);
+    });
   }
 
   @override

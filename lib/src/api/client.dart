@@ -1,10 +1,10 @@
 import 'dart:convert';
-import 'package:bika/src/api/response/base.dart';
+import 'request/header.dart';
+import 'request/method.dart';
+import 'response/base.dart';
 import 'package:bika/src/model/account.dart';
 import 'package:bika/src/base/logger.dart';
 import 'package:http/http.dart' as http;
-import 'request/header.dart';
-import 'request/method.dart';
 
 enum AppHost {
   mainServer("https://picaapi.picacomic.com/"),
@@ -37,9 +37,13 @@ class HttpClient {
     } else {
       url = Uri.parse("${host.value}$route");
     }
+    late String routeAndQuery;
     if (queryParams != null) {
       // 如果有 query 参数，拼接到 URL
       url = url.replace(queryParameters: queryParams);
+      routeAndQuery = "$route?${url.query}";
+    } else {
+      routeAndQuery = route;
     }
     final token = withToken ? Account.shared.currentAccount?.token : null;
     final extraHeaders = {
@@ -47,7 +51,7 @@ class HttpClient {
       "Host": "picaapi.picacomic.com",
     };
     final headers = await AppHeaderBuilder.completeAppHeaders(
-        route, method, token, extraHeaders);
+        routeAndQuery, method, token, extraHeaders);
 
     late final http.Response response;
     switch (method) {
@@ -63,8 +67,13 @@ class HttpClient {
         throw Exception("Unsupported method: $method");
     }
     BikaLogger().d(response.body);
-    return ApiResponse<T>.fromJson(jsonDecode(response.body),
+    final apiResponse = ApiResponse<T>.fromJson(jsonDecode(response.body),
         (json) => fromJsonT(json as Map<String, dynamic>));
+
+    if (apiResponse.isTokenExpired()) {
+      Account.shared.logout();
+    }
+    return apiResponse;
   }
 
   static Future<ApiResponse<T>> get<T>({
