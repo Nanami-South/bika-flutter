@@ -1,10 +1,10 @@
-import 'package:bika/src/model/account.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
+import 'src/model/account.dart';
 import 'src/app.dart';
-import 'src/svc/logger.dart';
+import 'src/base/logger.dart';
 
 Future<void> beforeRunApp() async {
   // init logger

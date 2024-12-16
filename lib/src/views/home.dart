@@ -29,13 +29,13 @@ enum HomeBottomBarType {
       case HomeBottomBarType.notice:
         return "公告";
       case HomeBottomBarType.search:
-        return "分类";
+        return "发现";
       case HomeBottomBarType.game:
         return "游戏";
       case HomeBottomBarType.profile:
-        return "个人中心";
+        return "我的";
       case HomeBottomBarType.setting:
-        return "设定";
+        return "设置";
     }
   }
 
@@ -46,7 +46,7 @@ enum HomeBottomBarType {
       case HomeBottomBarType.search:
         return Icons.search;
       case HomeBottomBarType.game:
-        return Icons.gamepad;
+        return Icons.games;
       case HomeBottomBarType.profile:
         return Icons.person;
       case HomeBottomBarType.setting:

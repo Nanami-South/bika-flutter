@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:uuid/uuid.dart';
-import 'package:bika/src/svc/logger.dart';
+import 'package:bika/src/base/logger.dart';
 
 class SignatureTool {
+  // Calculate the signature of the request
+
   static const List<String> charTable = [
     '0',
     '1',
@@ -26,7 +28,7 @@ class SignatureTool {
   // Main method to calculate HMAC-SHA256
   static Future<String?> sign(String str) async {
     const String keyString =
-        r"~d}$Q7$eIni=V)9\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn"; // bika 这个密钥在java转义之后其实是63位, 这里直接写了转义之后的
+        r"~d}$Q7$eIni=V)9\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn"; // bika 这个密钥是63位，感觉像是没注意转义符留下的坑
     final keyBytes = utf8.encode(keyString); // Convert key string to bytes
     // Convert input string to lowercase
     final dataStr = str.toLowerCase();

@@ -4,7 +4,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:bika/src/svc/logger.dart';
+import 'package:bika/src/base/logger.dart';
 part 'account.g.dart';
 
 @JsonSerializable()

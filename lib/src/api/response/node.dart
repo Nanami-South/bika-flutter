@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-part 'init.g.dart';
+part 'node.g.dart';
 
 //{"status":"ok","addresses":["104.20.180.50","104.20.181.50"],"waka":"https://ad-channel.diwodiwo.xyz","adKeyword":"diwodiwo"}
 @JsonSerializable()

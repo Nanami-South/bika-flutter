@@ -1,4 +1,5 @@
 import 'package:bika/src/api/login.dart';
+import 'package:bika/src/base/logger.dart';
 import 'package:bika/src/model/account.dart';
 import 'package:bika/src/views/toast.dart';
 import 'package:flutter/material.dart';
@@ -128,6 +129,7 @@ class _LoginWidgetState extends State<LoginBodyWidget> {
                   }
                 } catch (e) {
                   if (!mounted) return;
+                  BikaLogger().e(e.toString());
                   // toast hint
                   GlobalToast.show("login failed", debugMessage: e.toString());
                 } finally {
