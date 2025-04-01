@@ -15,6 +15,10 @@ class Thumb {
       required this.path,
       required this.originalName});
 
+  String imageUrl() {
+    return "https://s3.picacomic.com/static/$path";
+  }
+
   factory Thumb.fromJson(Map<String, dynamic> json) => _$ThumbFromJson(json);
 
   Map<String, dynamic> toJson() => _$ThumbToJson(this);
@@ -26,13 +30,13 @@ class ComicDoc {
   final String id;
 
   final String title;
-  final String author;
+  final String? author;
   final int? totalViews;
   final int? totalLikes;
   final int pagesCount;
   final int epsCount;
   final bool finished;
-  final List<String> categories;
+  final List<String>? categories;
   final Thumb thumb;
 
   final int? likesCount;
@@ -42,13 +46,13 @@ class ComicDoc {
   ComicDoc({
     required this.id,
     required this.title,
-    required this.author,
+    this.author,
     this.totalViews,
     this.totalLikes,
     required this.pagesCount,
     required this.epsCount,
     required this.finished,
-    required this.categories,
+    this.categories,
     required this.thumb,
     this.likesCount,
     this.viewsCount,
@@ -148,7 +152,7 @@ class ComicInfo {
   final String title;
   final String? description;
   final Thumb? thumb;
-  final String author;
+  final String? author;
   final String? chineseTeam;
   final List<String>? categories;
   final List<String>? tags;
@@ -166,17 +170,19 @@ class ComicInfo {
   final int? totalViews;
   final int? totalComments;
   final int? viewsCount;
-  final int? likesCount;
+  int? likesCount;
   final int? commentsCount;
-  final bool? isFavourite;
-  final bool? isLiked;
+
+  @JsonKey(name: 'isFavourite')
+  bool? isFavorite;
+  bool? isLiked;
   ComicInfo(
       {required this.id,
       required this.creator,
       required this.title,
       this.description,
       this.thumb,
-      required this.author,
+      this.author,
       this.chineseTeam,
       this.categories,
       this.tags,
@@ -193,7 +199,7 @@ class ComicInfo {
       this.viewsCount,
       this.likesCount,
       this.commentsCount,
-      this.isFavourite,
+      this.isFavorite,
       this.isLiked});
 
   factory ComicInfo.fromJson(Map<String, dynamic> json) =>

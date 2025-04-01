@@ -1,6 +1,7 @@
 import 'package:bika/src/theme/color.dart';
 import 'package:flutter/material.dart';
 import 'package:bika/src/views/profile/userinfo/userinfo.dart';
+import 'package:bika/src/views/profile/comic/favorite.dart';
 
 class ProfileWidget extends StatefulWidget {
   static const String routeName = '/profile';
@@ -15,7 +16,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('我的主页'),
+        title: const Text('我的'),
         centerTitle: true,
         backgroundColor: AppColors.backgroundColor(context),
         surfaceTintColor: AppColors.backgroundColor(context),
@@ -45,7 +46,7 @@ class ProfileWidgetState extends State<ProfileWidget> {
             indent: 4,
             endIndent: 4,
           ),
-          const Text("TODO: 收藏"),
+          const FavoriteComicsPreviewWidget(),
         ],
       ),
     );

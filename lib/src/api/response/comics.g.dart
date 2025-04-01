@@ -21,14 +21,14 @@ Map<String, dynamic> _$ThumbToJson(Thumb instance) => <String, dynamic>{
 ComicDoc _$ComicDocFromJson(Map<String, dynamic> json) => ComicDoc(
       id: json['_id'] as String,
       title: json['title'] as String,
-      author: json['author'] as String,
+      author: json['author'] as String?,
       totalViews: (json['totalViews'] as num?)?.toInt(),
       totalLikes: (json['totalLikes'] as num?)?.toInt(),
       pagesCount: (json['pagesCount'] as num).toInt(),
       epsCount: (json['epsCount'] as num).toInt(),
       finished: json['finished'] as bool,
-      categories: (json['categories'] as List<dynamic>)
-          .map((e) => e as String)
+      categories: (json['categories'] as List<dynamic>?)
+          ?.map((e) => e as String)
           .toList(),
       thumb: Thumb.fromJson(json['thumb'] as Map<String, dynamic>),
       likesCount: (json['likesCount'] as num?)?.toInt(),
@@ -137,7 +137,7 @@ ComicInfo _$ComicInfoFromJson(Map<String, dynamic> json) => ComicInfo(
       thumb: json['thumb'] == null
           ? null
           : Thumb.fromJson(json['thumb'] as Map<String, dynamic>),
-      author: json['author'] as String,
+      author: json['author'] as String?,
       chineseTeam: json['chineseTeam'] as String?,
       categories: (json['categories'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -156,7 +156,7 @@ ComicInfo _$ComicInfoFromJson(Map<String, dynamic> json) => ComicInfo(
       viewsCount: (json['viewsCount'] as num?)?.toInt(),
       likesCount: (json['likesCount'] as num?)?.toInt(),
       commentsCount: (json['commentsCount'] as num?)?.toInt(),
-      isFavourite: json['isFavourite'] as bool?,
+      isFavorite: json['isFavourite'] as bool?,
       isLiked: json['isLiked'] as bool?,
     );
 
@@ -183,7 +183,7 @@ Map<String, dynamic> _$ComicInfoToJson(ComicInfo instance) => <String, dynamic>{
       'viewsCount': instance.viewsCount,
       'likesCount': instance.likesCount,
       'commentsCount': instance.commentsCount,
-      'isFavourite': instance.isFavourite,
+      'isFavourite': instance.isFavorite,
       'isLiked': instance.isLiked,
     };
 
