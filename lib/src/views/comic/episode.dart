@@ -1,3 +1,5 @@
+import 'package:bika/src/views/comic/reader/reader.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bika/src/api/response/comics.dart';
 import 'package:bika/src/api/comics.dart';
@@ -56,7 +58,15 @@ class _ComicEpisodeListWidgetState extends State<ComicEpisodeListWidget> {
       BuildContext context, ComicEpisodeDoc episode, int index) {
     return GestureDetector(
       onTap: () {
-        // TODO: 跳转到漫画章节详情页
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) => ComicReaderWidget(
+              comicId: widget.comicId,
+              episodeId: episode.order,
+            ),
+          ),
+        );
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
