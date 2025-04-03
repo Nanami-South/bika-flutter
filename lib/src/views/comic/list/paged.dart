@@ -1,140 +1,32 @@
 import 'package:bika/src/views/toast.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bika/src/api/response/comics.dart';
 import 'package:bika/src/api/comics.dart';
 import 'package:bika/src/base/logger.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:bika/src/views/comic/info.dart';
 import 'package:bika/src/theme/color.dart';
+import 'package:bika/src/views/comic/list/card.dart';
 
-Widget buildComicListCard(BuildContext context, ComicDoc comic) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => ComicInfoPageWidget(comicId: comic.id),
-        ),
-      );
-    },
-    child: Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 封面图
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8),
-              bottomLeft: Radius.circular(8),
-            ),
-            child: CachedNetworkImage(
-              imageUrl: comic.thumb.imageUrl(),
-              width: 120,
-              height: 160,
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: Colors.grey[200],
-                width: 120,
-                height: 160,
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: Colors.grey[200],
-                width: 120,
-                height: 160,
-                child: const Icon(Icons.broken_image),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-              child: SizedBox(
-                height: 160 - 16,
-                child: Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Text(
-                          comic.title,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          "${comic.pagesCount}P",
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.black54),
-                        ),
-                        Text(
-                          comic.author ?? "",
-                          style:
-                              const TextStyle(fontSize: 12, color: Colors.pink),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          "分类: ${comic.categories?.join(", ") ?? ""}",
-                          style: const TextStyle(
-                              fontSize: 12, color: Colors.black87),
-                        ),
-                        const Spacer(), // 添加间距弹性填充
-                      ],
-                    ),
-                    Positioned(
-                      // 改用绝对定位
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-
-                      child: Row(
-                        children: [
-                          const Icon(Icons.favorite,
-                              size: 14, color: Colors.pink),
-                          const SizedBox(width: 4),
-                          Text("${comic.totalLikes}"),
-                          const SizedBox(width: 12),
-                          Text("指数: ${comic.totalViews}"),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
-class FavoriteComicListPageWidget extends StatefulWidget {
-  const FavoriteComicListPageWidget({super.key});
+class PagedComicListWidget extends StatefulWidget {
+  final String appbarTitle;
+  final List<SortType> availableSortTypes;
+  const PagedComicListWidget({
+    super.key,
+    required this.appbarTitle,
+    required this.availableSortTypes,
+  });
 
   @override
-  State<FavoriteComicListPageWidget> createState() =>
-      _FavoriteComicListPageWidgetState();
+  State<PagedComicListWidget> createState() => _PagedComicListWidgetState();
+
+  /// 子类来实现
+  Future<PagedComicsListResponseData?> Function(String, SortType)
+      get fetchComicsMethod => (page, sortType) async {
+            /// 子类需要实现
+            return null;
+          };
 }
 
-class _FavoriteComicListPageWidgetState
-    extends State<FavoriteComicListPageWidget> {
+class _PagedComicListWidgetState extends State<PagedComicListWidget> {
   SortType _sortType = SortType.dateDescend;
   List<ComicDoc>? _comicDocList;
   List<ComicDoc>? _filteredComicList;
@@ -162,8 +54,8 @@ class _FavoriteComicListPageWidgetState
       _lastLoadingListError = false;
     });
     try {
-      final c = await ComicsApi.myLatestFavoriteComics(
-          sortType: _sortType, page: _currentPage.toString());
+      final c =
+          await widget.fetchComicsMethod(_currentPage.toString(), _sortType);
       if (c != null) {
         if (mounted) {
           setState(() {
@@ -184,7 +76,7 @@ class _FavoriteComicListPageWidgetState
           });
         }
       } else {
-        BikaLogger().e('fetch favorite comics is null');
+        BikaLogger().e('fetch Category comics is null');
       }
     } catch (e) {
       BikaLogger().e(e.toString());
@@ -257,7 +149,7 @@ class _FavoriteComicListPageWidgetState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("全部收藏"),
+        title: Text(widget.appbarTitle),
         leading: const BackButton(), // 左上角返回按钮
       ),
       body: _buildBody(context),
@@ -284,8 +176,7 @@ class _FavoriteComicListPageWidgetState
               DropdownButton<SortType>(
                 value: _sortType,
                 underline: const SizedBox(),
-                items: [SortType.dateDescend, SortType.dateAscend]
-                    .map((SortType type) {
+                items: widget.availableSortTypes.map((SortType type) {
                   return DropdownMenuItem<SortType>(
                     value: type,
                     child: Text(type.display()),
@@ -424,7 +315,7 @@ class _FavoriteComicListPageWidgetState
           }
         }
 
-        return buildComicListCard(context, _filteredComicList![index]);
+        return ComicListCardWidget(comic: _filteredComicList![index]);
       },
     );
   }
@@ -449,4 +340,142 @@ class _FavoriteComicListPageWidgetState
       _uniqueAuthors = authors.toList()..sort();
     });
   }
+}
+
+/// 收藏列表页面
+class FavoriteComicListPageWidget extends PagedComicListWidget {
+  const FavoriteComicListPageWidget({super.key})
+      : super(
+          appbarTitle: "全部收藏",
+          availableSortTypes: const [SortType.dateDescend, SortType.dateAscend],
+        );
+
+  @override
+  Future<PagedComicsListResponseData?> Function(String, SortType)
+      get fetchComicsMethod => (page, sortType) async {
+            return await ComicsApi.myLatestFavoriteComics(
+                sortType: sortType, page: page);
+          };
+}
+
+/// 作者列表页面
+class AuthorComicListPageWidget extends PagedComicListWidget {
+  final String author;
+  const AuthorComicListPageWidget({super.key, required this.author})
+      : super(
+          appbarTitle: author,
+          availableSortTypes: const [
+            SortType.dateDescend,
+            SortType.dateAscend,
+            SortType.likeDescend,
+            SortType.viewDescend,
+          ],
+        );
+
+  @override
+  Future<PagedComicsListResponseData?> Function(String, SortType)
+      get fetchComicsMethod => (page, sortType) async {
+            return await ComicsApi.comicsWithAuthor(author, page, sortType);
+          };
+}
+
+/// 分类列表页面
+class CategoryComicListPageWidget extends PagedComicListWidget {
+  final String category;
+  const CategoryComicListPageWidget({super.key, required this.category})
+      : super(
+          appbarTitle: category,
+          availableSortTypes: const [
+            SortType.dateDescend,
+            SortType.dateAscend,
+            SortType.likeDescend,
+            SortType.viewDescend,
+          ],
+        );
+
+  @override
+  Future<PagedComicsListResponseData?> Function(String, SortType)
+      get fetchComicsMethod => (page, sortType) async {
+            return await ComicsApi.comicsWithCategory(category, page, sortType);
+          };
+}
+
+/// tag 列表页面
+class TagComicListPageWidget extends PagedComicListWidget {
+  final String tag;
+  const TagComicListPageWidget({super.key, required this.tag})
+      : super(
+          appbarTitle: tag,
+          availableSortTypes: const [
+            SortType.dateDescend,
+            SortType.dateAscend,
+            SortType.likeDescend,
+            SortType.viewDescend,
+          ],
+        );
+
+  @override
+  Future<PagedComicsListResponseData?> Function(String, SortType)
+      get fetchComicsMethod => (page, sortType) async {
+            return await ComicsApi.comicsWithTags(tag, page, sortType);
+          };
+}
+
+/// 汉化组列表页面
+class ChineseTeamComicListPageWidget extends PagedComicListWidget {
+  final String chineseTeam;
+  const ChineseTeamComicListPageWidget({super.key, required this.chineseTeam})
+      : super(
+          appbarTitle: chineseTeam,
+          availableSortTypes: const [
+            SortType.dateDescend,
+            SortType.dateAscend,
+            SortType.likeDescend,
+            SortType.viewDescend,
+          ],
+        );
+
+  @override
+  Future<PagedComicsListResponseData?> Function(String, SortType)
+      get fetchComicsMethod => (page, sortType) async {
+            return await ComicsApi.comicsWithChineseTeam(
+                chineseTeam, page, sortType);
+          };
+}
+
+/// 上传者列表页面
+class CreatorComicListPageWidget extends PagedComicListWidget {
+  final Creator creator;
+  CreatorComicListPageWidget({super.key, required this.creator})
+      : super(
+          appbarTitle: creator.name,
+          availableSortTypes: const [
+            SortType.dateDescend,
+            SortType.dateAscend,
+            SortType.likeDescend,
+            SortType.viewDescend,
+          ],
+        );
+
+  @override
+  Future<PagedComicsListResponseData?> Function(String, SortType)
+      get fetchComicsMethod => (page, sortType) async {
+            return await ComicsApi.comicsWithCreator(
+                creator.id, page, sortType);
+          };
+}
+
+/// 最近更新列表页面
+class LatestComicListPageWidget extends PagedComicListWidget {
+  const LatestComicListPageWidget({super.key})
+      : super(
+          appbarTitle: "最近更新",
+          availableSortTypes: const [SortType.dateDescend, SortType.dateAscend],
+        );
+
+  @override
+  Future<PagedComicsListResponseData?> Function(String, SortType)
+      get fetchComicsMethod => (page, sortType) async {
+            return await ComicsApi.latestComics(page);
+          };
 }

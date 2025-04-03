@@ -26,6 +26,7 @@ dependencies:
   cached_network_image: ^3.4.1
   synchronized: ^3.3.0+3
   intl: ^0.20.2
+  custom_refresh_indicator: ^4.0.1
 
 dev_dependencies:
   flutter_test:
@@ -36,3 +37,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/images/

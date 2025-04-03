@@ -5,7 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:bika/src/api/response/comics.dart';
 import 'package:bika/src/base/logger.dart';
-import 'package:bika/src/views/comic/favorite.dart';
+import 'package:bika/src/views/comic/list/paged.dart';
 import 'package:flutter/cupertino.dart';
 
 class FavoriteComicsPreviewWidget extends StatefulWidget {
@@ -63,7 +63,7 @@ class _FavoriteComicsPreviewWidgetState
           Navigator.push(
             context,
             CupertinoPageRoute(
-              builder: (context) => const FavoriteComicListPageWidget(),
+              builder: (context) => FavoriteComicListPageWidget(),
             ),
           );
         },

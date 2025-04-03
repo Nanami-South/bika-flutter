@@ -66,7 +66,7 @@ class Category {
 
 @JsonSerializable()
 class CategoryResponseData {
-  final List<Category> categories;
+  List<Category> categories;
 
   CategoryResponseData(this.categories);
 

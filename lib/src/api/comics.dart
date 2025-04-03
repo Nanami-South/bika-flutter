@@ -140,10 +140,23 @@ class ComicsApi {
 
   /// 按标签搜索
   static Future<PagedComicsListResponseData?> comicsWithTags(
-      String tags, String page) async {
+      String tags, String page, SortType sortType) async {
     // 按照标签搜索
     final queryParams = {
       "t": tags,
+      "s": sortType.value,
+      "page": page,
+    };
+    return _comicsListWithCondition(queryParams, page);
+  }
+
+  /// 按分类搜索
+  static Future<PagedComicsListResponseData?> comicsWithCategory(
+      String category, String page, SortType sortType) async {
+    // 按照分类搜索
+    final queryParams = {
+      "c": category,
+      "s": sortType.value,
       "page": page,
     };
     return _comicsListWithCondition(queryParams, page);
@@ -151,21 +164,23 @@ class ComicsApi {
 
   /// 按作者搜索
   static Future<PagedComicsListResponseData?> comicsWithAuthor(
-      String author, String page) async {
+      String author, String page, SortType sortType) async {
     // 查询某个作者的作品列表
     final queryParams = {
       "a": author,
+      "s": sortType.value,
       "page": page,
     };
     return _comicsListWithCondition(queryParams, page);
   }
 
   /// 按翻译搜索
-  static Future<PagedComicsListResponseData?> comicsWithChineseTranslator(
-      String ct, String page) async {
+  static Future<PagedComicsListResponseData?> comicsWithChineseTeam(
+      String ct, String page, SortType sortType) async {
     // 按照汉化组搜索
     final queryParams = {
       "ct": ct,
+      "s": sortType.value,
       "page": page,
     };
     return _comicsListWithCondition(queryParams, page);
@@ -173,10 +188,21 @@ class ComicsApi {
 
   /// 按上传者搜索
   static Future<PagedComicsListResponseData?> comicsWithCreator(
-      String ca, String page) async {
+      String ca, String page, SortType sortType) async {
     // 按照创作者搜索
     final queryParams = {
       "ca": ca,
+      "s": sortType.value,
+      "page": page,
+    };
+    return _comicsListWithCondition(queryParams, page);
+  }
+
+  /// 按最新搜索
+  static Future<PagedComicsListResponseData?> latestComics(String page) async {
+    // 按照最新搜索
+    final queryParams = {
+      "s": SortType.dateDescend.value,
       "page": page,
     };
     return _comicsListWithCondition(queryParams, page);

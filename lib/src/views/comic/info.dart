@@ -1,142 +1,12 @@
 import 'package:bika/src/views/comic/episode.dart';
+import 'package:bika/src/views/comic/list/paged.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bika/src/api/response/comics.dart';
 import 'package:bika/src/api/comics.dart';
 import 'package:bika/src/base/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:bika/src/base/time.dart';
-
-Widget buildAuthorCell(Creator? c, String? updatedAt) {
-  if (c == null) {
-    return const Text("没有作者信息");
-  }
-  return InkWell(
-    onTap: () {
-      // TODO: 跳转到作者主页
-    },
-    child: Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
-      elevation: 3,
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            // 作者头像
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: c.avatar?.imageUrl() ?? "",
-                  width: 56,
-                  height: 56,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(
-                    width: 56,
-                    height: 56,
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.person, color: Colors.grey),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    width: 56,
-                    height: 56,
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.person, color: Colors.grey),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 16),
-
-            // 作者信息
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        c.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      if (c.title != null) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[50],
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            c.title!,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.blue[700],
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  if (c.slogan != null && c.slogan!.isNotEmpty)
-                    Text(
-                      c.slogan!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                ],
-              ),
-            ),
-            // 更新时间
-            const SizedBox(width: 16),
-            if (updatedAt != null)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    '上次更新',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    formatUpdatedTime(updatedAt),
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
 
 class ComicInfoPageWidget extends StatefulWidget {
   final String comicId;
@@ -268,6 +138,150 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
     );
   }
 
+  Widget _buildCreatorCell(
+      BuildContext context, Creator? c, String? updatedAt) {
+    if (c == null) {
+      return const Text("没有作者信息");
+    }
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) => CreatorComicListPageWidget(creator: c),
+          ),
+        );
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        color: Colors.white,
+        elevation: 3,
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // 作者头像
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: c.avatar?.imageUrl() ?? "",
+                    width: 56,
+                    height: 56,
+                    fit: BoxFit.cover,
+                    placeholder: (context, url) => Container(
+                      width: 56,
+                      height: 56,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.person, color: Colors.grey),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      width: 56,
+                      height: 56,
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.person, color: Colors.grey),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+
+              // 作者信息
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            c.name,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (c.title != null) ...[
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.blue[50],
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                c.title!,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.blue[700],
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    if (c.slogan != null && c.slogan!.isNotEmpty)
+                      Text(
+                        c.slogan!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                  ],
+                ),
+              ),
+              // 更新时间
+              const SizedBox(width: 16),
+              if (updatedAt != null)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      '上次更新',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      formatUpdatedTime(updatedAt),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildBody(BuildContext context) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -311,15 +325,53 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
                         height: 1.3,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _comicInfo?.author ?? "",
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
-                    ),
                     const SizedBox(height: 8),
+                    if (_comicInfo?.author != null &&
+                        _comicInfo?.author != "") ...[
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) => AuthorComicListPageWidget(
+                                  author: _comicInfo?.author ?? ""),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "作者：${_comicInfo?.author ?? "无"}",
+                          style: const TextStyle(
+                            color: Colors.pink,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    if (_comicInfo?.chineseTeam != null &&
+                        _comicInfo?.chineseTeam != "") ...[
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                              builder: (context) =>
+                                  ChineseTeamComicListPageWidget(
+                                      chineseTeam:
+                                          _comicInfo?.chineseTeam ?? ""),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "汉化：${_comicInfo?.chineseTeam ?? "无"}",
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 4),
@@ -428,8 +480,9 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
 
           const SizedBox(height: 8),
 
-          // 3. 作者信息
-          buildAuthorCell(_comicInfo?.creator, _comicInfo?.updatedAt),
+          // 3. 上传者信息
+          _buildCreatorCell(
+              context, _comicInfo?.creator, _comicInfo?.updatedAt),
 
           const SizedBox(height: 8),
 
@@ -496,12 +549,23 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
             spacing: 8,
             runSpacing: 8,
             children: _comicInfo?.categories
-                    ?.map((item) => Chip(
-                          label: Text(item),
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: const BorderSide(color: Colors.grey),
+                    ?.map((item) => InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) =>
+                                      CategoryComicListPageWidget(
+                                          category: item)),
+                            );
+                          },
+                          child: Chip(
+                            label: Text(item),
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: const BorderSide(color: Colors.grey),
+                            ),
                           ),
                         ))
                     .toList() ??
@@ -514,12 +578,22 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
             spacing: 8,
             runSpacing: 8,
             children: _comicInfo?.tags
-                    ?.map((item) => Chip(
-                          label: Text(item),
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: const BorderSide(color: Colors.grey),
+                    ?.map((item) => InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (context) =>
+                                      TagComicListPageWidget(tag: item)),
+                            );
+                          },
+                          child: Chip(
+                            label: Text(item),
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: const BorderSide(color: Colors.grey),
+                            ),
                           ),
                         ))
                     .toList() ??

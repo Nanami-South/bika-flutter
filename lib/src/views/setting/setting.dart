@@ -70,21 +70,22 @@ class SettingWidgetState extends State<SettingWidget> {
                 "random comics: length=${comicListData?.comics.length}");
       }
       if (name == '标签搜索') {
-        final pagedComicsListData = await ComicsApi.comicsWithTags("NTR", "1");
+        final pagedComicsListData =
+            await ComicsApi.comicsWithTags("NTR", "1", SortType.dateDescend);
         GlobalToast.show('标签搜索',
             debugMessage:
                 "comics list: pages=${pagedComicsListData?.comics.pages}, total=${pagedComicsListData?.comics.total}, docs len=${pagedComicsListData?.comics.docs.length}");
       }
       if (name == '作者搜索') {
         final pagedComicsListData =
-            await ComicsApi.comicsWithAuthor("三色坊", "1");
+            await ComicsApi.comicsWithAuthor("三色坊", "1", SortType.dateDescend);
         GlobalToast.show('作者搜索',
             debugMessage:
                 "comics list: pages=${pagedComicsListData?.comics.pages}, total=${pagedComicsListData?.comics.total}, docs len=${pagedComicsListData?.comics.docs.length}");
       }
       if (name == '汉化组搜索') {
-        final pagedComicsListData =
-            await ComicsApi.comicsWithChineseTranslator("无毒汉化组", "1");
+        final pagedComicsListData = await ComicsApi.comicsWithChineseTeam(
+            "无毒汉化组", "1", SortType.dateDescend);
         GlobalToast.show('汉化组搜索',
             debugMessage:
                 "comics list: pages=${pagedComicsListData?.comics.pages}, total=${pagedComicsListData?.comics.total}, docs len=${pagedComicsListData?.comics.docs.length}");
