@@ -6,6 +6,7 @@ import 'package:bika/src/api/comics.dart';
 import 'package:bika/src/base/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:bika/src/views/comic/info.dart';
+import 'package:bika/src/theme/color.dart';
 
 Widget buildComicListCard(BuildContext context, ComicDoc comic) {
   return GestureDetector(
@@ -134,14 +135,22 @@ class FavoriteComicListPageWidget extends StatefulWidget {
 
 class _FavoriteComicListPageWidgetState
     extends State<FavoriteComicListPageWidget> {
+  SortType _sortType = SortType.dateDescend;
   List<ComicDoc>? _comicDocList;
+  List<ComicDoc>? _filteredComicList;
   final ScrollController _scrollController = ScrollController();
-  bool _isLoading = false;
+  bool _isLoadingList = false;
+  bool _lastLoadingListError = false;
   int _currentPage = 1;
   int? _maxPages;
+  bool _showFilter = false;
+  String? _selectedCategory;
+  String? _selectedAuthor;
+  List<String> _uniqueCategories = [];
+  List<String> _uniqueAuthors = [];
 
   void fetchNextPage() async {
-    if (_isLoading) {
+    if (_isLoadingList) {
       return;
     }
     if (_maxPages != null && _currentPage > _maxPages!) {
@@ -149,11 +158,12 @@ class _FavoriteComicListPageWidgetState
       return;
     }
     setState(() {
-      _isLoading = true;
+      _isLoadingList = true;
+      _lastLoadingListError = false;
     });
     try {
       final c = await ComicsApi.myLatestFavoriteComics(
-          sortType: SortType.dateDescend, page: _currentPage.toString());
+          sortType: _sortType, page: _currentPage.toString());
       if (c != null) {
         if (mounted) {
           setState(() {
@@ -164,6 +174,8 @@ class _FavoriteComicListPageWidgetState
             }
             _currentPage += 1;
             _maxPages = c.comics.pages;
+            // 更新过滤后的列表
+            _updateFilteredList();
             // 第一次滑到底部给出toast提示
             if (_currentPage > _maxPages!) {
               GlobalToast.show("已经滑到底部啦",
@@ -176,12 +188,47 @@ class _FavoriteComicListPageWidgetState
       }
     } catch (e) {
       BikaLogger().e(e.toString());
+      _lastLoadingListError = true;
+      GlobalToast.show("加载失败，可能是网络问题",
+          debugMessage: "$_currentPage/$_maxPages, ${e.toString()}");
     } finally {
       if (mounted) {
         setState(() {
-          _isLoading = false;
+          _isLoadingList = false;
         });
       }
+    }
+  }
+
+  void _updateFilteredList() {
+    if (_comicDocList == null) return;
+
+    _filteredComicList = _comicDocList!.where((comic) {
+      bool categoryMatch = _selectedCategory == null ||
+          (comic.categories != null &&
+              comic.categories!.contains(_selectedCategory));
+      bool authorMatch =
+          _selectedAuthor == null || comic.author == _selectedAuthor;
+      return categoryMatch && authorMatch;
+    }).toList();
+  }
+
+  void _onFilterChanged() {
+    setState(() {
+      _updateFilterOptions();
+      _updateFilteredList();
+    });
+  }
+
+  void _onSortTypeChanged(SortType? newValue) {
+    if (newValue != null && newValue != _sortType) {
+      setState(() {
+        _sortType = newValue;
+        _comicDocList = null;
+        _currentPage = 1;
+        _maxPages = null;
+      });
+      fetchNextPage();
     }
   }
 
@@ -218,18 +265,188 @@ class _FavoriteComicListPageWidgetState
   }
 
   Widget _buildBody(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppColors.surfaceColor(context),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              DropdownButton<SortType>(
+                value: _sortType,
+                underline: const SizedBox(),
+                items: [SortType.dateDescend, SortType.dateAscend]
+                    .map((SortType type) {
+                  return DropdownMenuItem<SortType>(
+                    value: type,
+                    child: Text(type.display()),
+                  );
+                }).toList(),
+                onChanged: _onSortTypeChanged,
+              ),
+              const SizedBox(width: 16),
+              IconButton(
+                icon: Icon(
+                    _showFilter ? Icons.filter_list : Icons.filter_list_off),
+                onPressed: () {
+                  setState(() {
+                    _showFilter = !_showFilter;
+                    if (_showFilter) {
+                      _updateFilterOptions();
+                    }
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+        if (_showFilter)
+          Container(
+            padding: const EdgeInsets.all(16),
+            color: Colors.grey[100],
+            child: Column(
+              children: [
+                DropdownButtonFormField<String>(
+                  value: _selectedCategory,
+                  decoration: const InputDecoration(
+                    labelText: '选择分类',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: [
+                    const DropdownMenuItem(
+                      value: null,
+                      child: Text('全部分类'),
+                    ),
+                    ..._uniqueCategories.map((category) {
+                      return DropdownMenuItem(
+                        value: category,
+                        child: Text(category),
+                      );
+                    }),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCategory = value;
+                    });
+                    _onFilterChanged();
+                  },
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _selectedAuthor,
+                  decoration: const InputDecoration(
+                    labelText: '选择作者',
+                    border: OutlineInputBorder(),
+                  ),
+                  items: [
+                    const DropdownMenuItem(
+                      value: null,
+                      child: Text('全部作者'),
+                    ),
+                    ..._uniqueAuthors.map((author) {
+                      return DropdownMenuItem(
+                        value: author,
+                        child: Text(author),
+                      );
+                    }),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedAuthor = value;
+                    });
+                    _onFilterChanged();
+                  },
+                ),
+              ],
+            ),
+          ),
+        Expanded(
+          child: _buildComicCardList(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildComicCardList(BuildContext context) {
     return ListView.builder(
       controller: _scrollController,
-      itemCount: _comicDocList?.length ?? 0,
+      itemCount: (_filteredComicList?.length ?? 0) + 1,
       itemBuilder: (context, index) {
-        if (index >= (_comicDocList?.length ?? 0)) {
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: CircularProgressIndicator()),
-          );
+        if (index >= (_filteredComicList?.length ?? 0)) {
+          if (!_isLoadingList && _lastLoadingListError) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  const Text("加载失败，可能是网络问题"),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _lastLoadingListError = false;
+                      });
+                      fetchNextPage();
+                    },
+                    child: const Text("重试"),
+                  ),
+                ],
+              ),
+            );
+          }
+          if (_isLoadingList) {
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 8),
+                  Text(
+                    "正在加载第 $_currentPage 页...",
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
         }
-        return buildComicListCard(context, _comicDocList![index]);
+
+        return buildComicListCard(context, _filteredComicList![index]);
       },
     );
+  }
+
+  void _updateFilterOptions() {
+    if (_comicDocList == null) return;
+
+    final categories = <String>{};
+    final authors = <String>{};
+
+    for (var comic in _comicDocList!) {
+      if (comic.categories != null) {
+        categories.addAll(comic.categories!);
+      }
+      if (comic.author != null && comic.author!.isNotEmpty) {
+        authors.add(comic.author!);
+      }
+    }
+
+    setState(() {
+      _uniqueCategories = categories.toList()..sort();
+      _uniqueAuthors = authors.toList()..sort();
+    });
   }
 }

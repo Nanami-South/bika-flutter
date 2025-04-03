@@ -5,6 +5,7 @@ import 'response/base.dart';
 import 'package:bika/src/model/account.dart';
 import 'package:bika/src/base/logger.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
 
 enum AppHost {
   mainServer("https://picaapi.picacomic.com/"),
@@ -56,13 +57,38 @@ class HttpClient {
     late final http.Response response;
     switch (method) {
       case RequestMethod.get:
-        response = await _client.get(url, headers: headers);
+        response = await _client.get(url, headers: headers).timeout(
+          const Duration(seconds: 30),
+          onTimeout: () {
+            throw TimeoutException('请求超时');
+          },
+        );
       case RequestMethod.post:
-        response = await _client.post(url,
-            headers: headers, body: body != null ? jsonEncode(body) : null);
+        response = await _client
+            .post(
+          url,
+          headers: headers,
+          body: body != null ? jsonEncode(body) : null,
+        )
+            .timeout(
+          const Duration(seconds: 30),
+          onTimeout: () {
+            throw TimeoutException('请求超时');
+          },
+        );
       case RequestMethod.put:
-        response = await _client.put(url,
-            headers: headers, body: body != null ? jsonEncode(body) : null);
+        response = await _client
+            .put(
+          url,
+          headers: headers,
+          body: body != null ? jsonEncode(body) : null,
+        )
+            .timeout(
+          const Duration(seconds: 30),
+          onTimeout: () {
+            throw TimeoutException('请求超时');
+          },
+        );
       default:
         throw Exception("Unsupported method: $method");
     }

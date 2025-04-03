@@ -7,7 +7,7 @@ class GlobalToast {
   static void show(String? message, {String? debugMessage}) {
     String? toastMessage;
     if (kDebugMode) {
-      toastMessage = debugMessage ?? message;
+      toastMessage = "$message\nDEBUG:${debugMessage ?? ""}";
     } else {
       toastMessage = message;
     }
