@@ -1,7 +1,6 @@
 import 'package:bika/src/api/comics.dart';
 import 'package:bika/src/theme/color.dart';
-import 'package:bika/src/views/comic/info.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:bika/src/views/comic/list/preview.dart';
 import 'package:flutter/material.dart';
 import 'package:bika/src/api/response/comics.dart';
 import 'package:bika/src/base/logger.dart';
@@ -63,7 +62,7 @@ class _FavoriteComicsPreviewWidgetState
           Navigator.push(
             context,
             CupertinoPageRoute(
-              builder: (context) => FavoriteComicListPageWidget(),
+              builder: (context) => const FavoriteComicListPageWidget(),
             ),
           );
         },
@@ -141,73 +140,6 @@ class _FavoriteComicsPreviewWidgetState
     );
   }
 
-  Widget _buildComicPreviewCard(
-      BuildContext context, String comicId, String coverUrl, String title) {
-    return GestureDetector(
-      onTap: () => {
-        Navigator.push(
-          context,
-          CupertinoPageRoute(
-            builder: (context) => ComicInfoPageWidget(comicId: comicId),
-          ),
-        )
-      },
-      child: SizedBox(
-        width: 90,
-        child: Column(
-          children: [
-            // 封面图
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: CachedNetworkImage(
-                imageUrl: coverUrl,
-                width: 90,
-                height: 120,
-                fit: BoxFit.cover,
-                fadeInDuration: const Duration(milliseconds: 50),
-                fadeOutDuration: const Duration(milliseconds: 50),
-                placeholder: (context, url) => Container(
-                  width: 90,
-                  height: 120,
-                  color: Colors.white, // 纯白背景
-                  child: const Center(
-                    child: SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1,
-                      ),
-                    ),
-                  ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  width: 90,
-                  height: 120,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            const SizedBox(height: 4),
-            // 标题
-            SizedBox(
-              height: 48,
-              child: Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: Colors.black87,
-                ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildFavouriteComicsPreview(BuildContext context) {
     if (_page1stComics == null || _page1stComics!.docs.isEmpty) {
       return const Padding(
@@ -218,22 +150,6 @@ class _FavoriteComicsPreviewWidgetState
 
     final displayItems = _page1stComics!.docs.take(5).toList();
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 0.0),
-      child: Row(
-        children: displayItems.map((item) {
-          return Padding(
-            padding: const EdgeInsets.only(right: 2.0),
-            child: _buildComicPreviewCard(
-              context,
-              item.id,
-              item.thumb.imageUrl(),
-              item.title,
-            ),
-          );
-        }).toList(),
-      ),
-    );
+    return ComicPreviewCardListWidget(comics: displayItems);
   }
 }

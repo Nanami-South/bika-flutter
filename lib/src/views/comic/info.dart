@@ -1,6 +1,7 @@
 import 'package:bika/src/views/comic/comment.dart';
 import 'package:bika/src/views/comic/episode.dart';
 import 'package:bika/src/views/comic/list/paged.dart';
+import 'package:bika/src/views/comic/list/preview.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bika/src/api/response/comics.dart';
@@ -8,6 +9,84 @@ import 'package:bika/src/api/comics.dart';
 import 'package:bika/src/base/logger.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:bika/src/base/time.dart';
+
+class RecommendListWidget extends StatefulWidget {
+  final String comicId;
+  const RecommendListWidget({super.key, required this.comicId});
+
+  @override
+  State<RecommendListWidget> createState() => _RecommendListWidgetState();
+}
+
+class _RecommendListWidgetState extends State<RecommendListWidget> {
+  List<ComicDoc>? _recommendList;
+  bool _isLoading = false;
+
+  void refreshRecommendList() async {
+    if (_isLoading) {
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final response = await ComicsApi.recommendComicList(widget.comicId);
+      if (response != null) {
+        setState(() {
+          _recommendList = response.comics;
+        });
+      } else {
+        BikaLogger().e('fetch recommend list is null, id=${widget.comicId}');
+      }
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    refreshRecommendList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 标题
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Text(
+            '推荐列表',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        if (_isLoading)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (_recommendList == null)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('暂无推荐数据'),
+            ),
+          )
+        else
+          ComicPreviewCardListWidget(comics: _recommendList ?? []),
+      ],
+    );
+  }
+}
 
 class ComicInfoPageWidget extends StatefulWidget {
   final String comicId;
@@ -497,6 +576,7 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
 
           const SizedBox(height: 8),
 
+          // 4. 漫画简介
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -504,8 +584,7 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
                 builder: (context, constraints) {
                   final textSpan = TextSpan(
                     text: _comicInfo?.description ?? "",
-                    style: const TextStyle(
-                        height: 1.5), // TODO: 处理文字的颜色，调整主题配色的时候一起修改
+                    style: const TextStyle(height: 1.5),
                   );
                   final textPainter = TextPainter(
                     text: textSpan,
@@ -553,7 +632,7 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
 
           const SizedBox(height: 12),
 
-          // 4. 分类标签
+          // 5. 分类标签
           const Text('分类', style: TextStyle(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
           Wrap(
@@ -613,8 +692,12 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
 
           const SizedBox(height: 20),
 
-          // 5. 章节列表
+          // 6. 章节列表
           ComicEpisodeListWidget(comicId: widget.comicId),
+
+          const SizedBox(height: 20),
+          // 7. 推荐列表
+          RecommendListWidget(comicId: widget.comicId),
         ],
       ),
     );
