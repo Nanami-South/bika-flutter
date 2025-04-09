@@ -1,28 +1,8 @@
 import 'dart:core';
 
 import 'package:json_annotation/json_annotation.dart';
-
+import 'base.dart';
 part 'comics.g.dart';
-
-@JsonSerializable()
-class Thumb {
-  final String fileServer;
-  final String path;
-  final String originalName;
-
-  Thumb(
-      {required this.fileServer,
-      required this.path,
-      required this.originalName});
-
-  String imageUrl() {
-    return "https://s3.picacomic.com/static/$path";
-  }
-
-  factory Thumb.fromJson(Map<String, dynamic> json) => _$ThumbFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ThumbToJson(this);
-}
 
 @JsonSerializable()
 class ComicDoc {

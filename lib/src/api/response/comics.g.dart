@@ -6,18 +6,6 @@ part of 'comics.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Thumb _$ThumbFromJson(Map<String, dynamic> json) => Thumb(
-      fileServer: json['fileServer'] as String,
-      path: json['path'] as String,
-      originalName: json['originalName'] as String,
-    );
-
-Map<String, dynamic> _$ThumbToJson(Thumb instance) => <String, dynamic>{
-      'fileServer': instance.fileServer,
-      'path': instance.path,
-      'originalName': instance.originalName,
-    };
-
 ComicDoc _$ComicDocFromJson(Map<String, dynamic> json) => ComicDoc(
       id: json['_id'] as String,
       title: json['title'] as String,

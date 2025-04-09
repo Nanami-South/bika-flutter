@@ -6,18 +6,6 @@ part of 'category.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Thumb _$ThumbFromJson(Map<String, dynamic> json) => Thumb(
-      json['fileServer'] as String,
-      json['originalName'] as String,
-      json['path'] as String,
-    );
-
-Map<String, dynamic> _$ThumbToJson(Thumb instance) => <String, dynamic>{
-      'fileServer': instance.fileServer,
-      'originalName': instance.originalName,
-      'path': instance.path,
-    };
-
 Category _$CategoryFromJson(Map<String, dynamic> json) => Category(
       json['_id'] as String?,
       json['title'] as String,

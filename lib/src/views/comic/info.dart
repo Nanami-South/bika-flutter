@@ -1,3 +1,4 @@
+import 'package:bika/src/views/comic/comment.dart';
 import 'package:bika/src/views/comic/episode.dart';
 import 'package:bika/src/views/comic/list/paged.dart';
 import 'package:flutter/cupertino.dart';
@@ -461,18 +462,28 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
                   width: 1,
                   color: Colors.grey[200],
                 ),
-                Column(
-                  children: [
-                    Icon(Icons.comment, color: Colors.grey[700]),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${_comicInfo?.commentsCount} 评论',
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 13,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) =>
+                              CommentListPageWidget(comicId: widget.comicId)),
+                    );
+                  },
+                  child: Column(
+                    children: [
+                      Icon(Icons.comment, color: Colors.grey[700]),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${_comicInfo?.commentsCount} 评论',
+                        style: TextStyle(
+                          color: Colors.grey[700],
+                          fontSize: 13,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),

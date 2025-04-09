@@ -6,18 +6,6 @@ part of 'profile.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Avatar _$AvatarFromJson(Map<String, dynamic> json) => Avatar(
-      json['fileServer'] as String,
-      json['originalName'] as String,
-      json['path'] as String,
-    );
-
-Map<String, dynamic> _$AvatarToJson(Avatar instance) => <String, dynamic>{
-      'originalName': instance.originalName,
-      'path': instance.path,
-      'fileServer': instance.fileServer,
-    };
-
 User _$UserFromJson(Map<String, dynamic> json) => User(
       json['_id'] as String,
       json['birthday'] as String?,
@@ -27,14 +15,14 @@ User _$UserFromJson(Map<String, dynamic> json) => User(
       json['activation_date'] as String?,
       json['title'] as String?,
       json['slogan'] as String?,
-      json['verified'] as bool,
+      json['verified'] as bool?,
       (json['exp'] as num).toInt(),
       (json['level'] as num).toInt(),
       json['characters'] as List<dynamic>?,
       json['created_at'] as String,
       json['avatar'] == null
           ? null
-          : Avatar.fromJson(json['avatar'] as Map<String, dynamic>),
+          : Thumb.fromJson(json['avatar'] as Map<String, dynamic>),
       json['isPunched'] as bool,
       json['character'] as String?,
     );

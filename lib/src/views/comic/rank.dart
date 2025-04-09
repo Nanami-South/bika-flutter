@@ -1,11 +1,8 @@
 import 'package:bika/src/views/comic/list/card.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bika/src/api/response/comics.dart';
 import 'package:bika/src/api/comics.dart';
 import 'package:bika/src/base/logger.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:bika/src/views/comic/info.dart';
 
 class RankComicPageWidget extends StatefulWidget {
   const RankComicPageWidget({super.key});

@@ -1,23 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-
+import 'base.dart';
 part 'profile.g.dart';
-
-@JsonSerializable()
-class Avatar {
-  final String originalName;
-  final String path;
-  final String fileServer;
-
-  Avatar(this.fileServer, this.originalName, this.path);
-
-  String imageUrl() {
-    return "https://s3.picacomic.com/static/$path";
-  }
-
-  factory Avatar.fromJson(Map<String, dynamic> json) => _$AvatarFromJson(json);
-
-  Map<String, dynamic> toJson() => _$AvatarToJson(this);
-}
 
 @JsonSerializable()
 class User {
@@ -31,13 +14,13 @@ class User {
   final String? activationDate;
   final String? title;
   final String? slogan;
-  final bool verified;
+  final bool? verified;
   final int exp;
   final int level;
   final List<dynamic>? characters;
   @JsonKey(name: "created_at")
   final String createdAt;
-  final Avatar? avatar;
+  final Thumb? avatar;
 
   final bool isPunched;
   final String? character;

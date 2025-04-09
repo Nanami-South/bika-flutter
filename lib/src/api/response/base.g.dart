@@ -39,3 +39,15 @@ Object? _$nullableGenericToJson<T>(
   Object? Function(T value) toJson,
 ) =>
     input == null ? null : toJson(input);
+
+Thumb _$ThumbFromJson(Map<String, dynamic> json) => Thumb(
+      fileServer: json['fileServer'] as String,
+      path: json['path'] as String,
+      originalName: json['originalName'] as String,
+    );
+
+Map<String, dynamic> _$ThumbToJson(Thumb instance) => <String, dynamic>{
+      'fileServer': instance.fileServer,
+      'path': instance.path,
+      'originalName': instance.originalName,
+    };
