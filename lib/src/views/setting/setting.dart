@@ -108,14 +108,14 @@ class SettingWidgetState extends State<SettingWidget> {
       }
       if (name == '漫画章节') {
         final episodeData =
-            await ComicsApi.comicEpisodeData("582196995f6b9a4f93e8124b");
+            await ComicsApi.comicEpisodeData("582196995f6b9a4f93e8124b", "1");
         GlobalToast.show('漫画章节',
             debugMessage:
                 "comic episode: length=${episodeData?.eps.docs}, total=${episodeData?.eps.total}");
       }
       if (name == '漫画图片') {
-        final comicPicturesData =
-            await ComicsApi.comicPictureData("582196995f6b9a4f93e8124b", 1);
+        final comicPicturesData = await ComicsApi.comicPictureData(
+            "582196995f6b9a4f93e8124b", 1, "1");
         GlobalToast.show('漫画图片',
             debugMessage:
                 "comic picture data: ep title=${comicPicturesData?.ep.title}, total=${comicPicturesData?.pages.total}");

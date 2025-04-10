@@ -245,10 +245,14 @@ class ComicsApi {
   }
 
   /// 漫画章节数据
-  static Future<ComicEpisodeResponseData?> comicEpisodeData(String id) async {
+  static Future<ComicEpisodeResponseData?> comicEpisodeData(
+      String id, String page) async {
     final response = await HttpClient.get<ComicEpisodeResponseData>(
         route: "comics/$id/eps",
         fromJsonT: ComicEpisodeResponseData.fromJson,
+        queryParams: {
+          "page": page,
+        },
         withToken: true);
     if (response.code != 200) {
       throw Exception(response.message);
@@ -258,10 +262,13 @@ class ComicsApi {
 
   /// 漫画章节的图片数据
   static Future<ComicPictureResponseData?> comicPictureData(
-      String id, int order) async {
+      String id, int order, String page) async {
     final response = await HttpClient.get<ComicPictureResponseData>(
         route: "comics/$id/order/$order/pages",
         fromJsonT: ComicPictureResponseData.fromJson,
+        queryParams: {
+          "page": page,
+        },
         withToken: true);
     if (response.code != 200) {
       throw Exception(response.message);

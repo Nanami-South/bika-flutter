@@ -100,6 +100,8 @@ class _ComicListCardWidgetState extends State<ComicListCardWidget> {
                             "分类: ${widget.comic.categories?.join(", ") ?? ""}",
                             style: const TextStyle(
                                 fontSize: 12, color: Colors.black87),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           const Spacer(),
                         ],

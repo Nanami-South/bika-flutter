@@ -32,9 +32,11 @@ class _RecommendListWidgetState extends State<RecommendListWidget> {
     try {
       final response = await ComicsApi.recommendComicList(widget.comicId);
       if (response != null) {
-        setState(() {
-          _recommendList = response.comics;
-        });
+        if (mounted) {
+          setState(() {
+            _recommendList = response.comics;
+          });
+        }
       } else {
         BikaLogger().e('fetch recommend list is null, id=${widget.comicId}');
       }
@@ -58,12 +60,13 @@ class _RecommendListWidgetState extends State<RecommendListWidget> {
       children: [
         // 标题
         const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
           child: Text(
             '推荐列表',
             style: TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
             ),
           ),
         ),
@@ -206,12 +209,6 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share, color: Colors.black),
-            onPressed: () {},
-          ),
-        ],
         elevation: 0,
       ),
       body: _buildBody(context),
@@ -338,19 +335,21 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       '上次更新',
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w300,
+                        color: Colors.grey[700],
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       formatUpdatedTime(updatedAt),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w300,
+                        color: Colors.grey[700],
                       ),
                     ),
                   ],
@@ -603,7 +602,10 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
                         overflow: _isDescriptionExpanded
                             ? TextOverflow.visible
                             : TextOverflow.ellipsis,
-                        style: const TextStyle(height: 1.5),
+                        style: const TextStyle(
+                          height: 1.5,
+                          color: Colors.black,
+                        ),
                       ),
                       if (exceedsMaxLines) ...[
                         const SizedBox(height: 4),
@@ -633,70 +635,105 @@ class _ComicInfoPageWidgetState extends State<ComicInfoPageWidget> {
           const SizedBox(height: 12),
 
           // 5. 分类标签
-          const Text('分类', style: TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _comicInfo?.categories
-                    ?.map((item) => InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) =>
-                                      CategoryComicListPageWidget(
-                                          category: item)),
-                            );
-                          },
-                          child: Chip(
-                            label: Text(item),
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: const BorderSide(color: Colors.grey),
-                            ),
-                          ),
-                        ))
-                    .toList() ??
-                [],
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text('分类：',
+                    style: TextStyle(color: Colors.black, fontSize: 16)),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 2,
+                  crossAxisAlignment: WrapCrossAlignment.start,
+                  children: _comicInfo?.categories
+                          ?.map((item) => InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) =>
+                                            CategoryComicListPageWidget(
+                                                category: item)),
+                                  );
+                                },
+                                child: Chip(
+                                  label: Text(item,
+                                      style: const TextStyle(
+                                          color: Colors.black, fontSize: 14)),
+                                  backgroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2, vertical: 2),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: const BorderSide(color: Colors.grey),
+                                  ),
+                                ),
+                              ))
+                          .toList() ??
+                      [],
+                ),
+              ),
+            ],
           ),
+
           const SizedBox(height: 12),
-          const Text('标签', style: TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: _comicInfo?.tags
-                    ?.map((item) => InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (context) =>
-                                      TagComicListPageWidget(tag: item)),
-                            );
-                          },
-                          child: Chip(
-                            label: Text(item),
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              side: const BorderSide(color: Colors.grey),
-                            ),
-                          ),
-                        ))
-                    .toList() ??
-                [],
+
+          // 6. 标签
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text('标签: ',
+                    style: TextStyle(color: Colors.black, fontSize: 16)),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 2,
+                  crossAxisAlignment: WrapCrossAlignment.start,
+                  children: _comicInfo?.tags
+                          ?.map((item) => InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (context) =>
+                                            TagComicListPageWidget(tag: item)),
+                                  );
+                                },
+                                child: Chip(
+                                  label: Text(item,
+                                      style: const TextStyle(
+                                          color: Colors.black, fontSize: 14)),
+                                  backgroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 2, vertical: 2),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    side: const BorderSide(color: Colors.grey),
+                                  ),
+                                ),
+                              ))
+                          .toList() ??
+                      [],
+                ),
+              ),
+            ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
 
-          // 6. 章节列表
+          // 7. 章节列表
           ComicEpisodeListWidget(comicId: widget.comicId),
 
-          const SizedBox(height: 20),
-          // 7. 推荐列表
+          const SizedBox(height: 12),
+          // 8. 推荐列表
           RecommendListWidget(comicId: widget.comicId),
         ],
       ),

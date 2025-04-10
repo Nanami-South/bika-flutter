@@ -16,7 +16,11 @@ class ProfileWidgetState extends State<ProfileWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('我的'),
+        title: Text('我的',
+            style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+                color: AppColors.primaryColor(context))),
         centerTitle: true,
         backgroundColor: AppColors.backgroundColor(context),
         surfaceTintColor: AppColors.backgroundColor(context),
@@ -33,13 +37,6 @@ class ProfileWidgetState extends State<ProfileWidget> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const UserInfoAreaWidget(),
-          Divider(
-            thickness: 1,
-            color: AppColors.onSurfaceColor(context),
-            indent: 4,
-            endIndent: 4,
-          ),
-          const Text("TODO: 最近"),
           Divider(
             thickness: 1,
             color: AppColors.onSurfaceColor(context),

@@ -1,11 +1,8 @@
 import 'package:bika/src/model/account.dart';
 import 'package:bika/src/theme/color.dart';
-import 'package:bika/src/views/game/game.dart';
 import 'package:bika/src/views/login.dart';
-import 'package:bika/src/views/notice/notice.dart';
 import 'package:bika/src/views/profile/profile.dart';
 import 'package:bika/src/views/search/search.dart';
-import 'package:bika/src/views/setting/setting.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,46 +15,31 @@ class HomeWidget extends StatefulWidget {
 }
 
 enum HomeBottomBarType {
-  notice,
   search,
-  game,
-  profile,
-  setting;
+  profile;
 
   String get displayName {
     switch (this) {
-      case HomeBottomBarType.notice:
-        return "公告";
       case HomeBottomBarType.search:
         return "发现";
-      case HomeBottomBarType.game:
-        return "游戏";
       case HomeBottomBarType.profile:
         return "我的";
-      case HomeBottomBarType.setting:
-        return "设置";
     }
   }
 
   IconData get icon {
     switch (this) {
-      case HomeBottomBarType.notice:
-        return Icons.home;
       case HomeBottomBarType.search:
         return Icons.search;
-      case HomeBottomBarType.game:
-        return Icons.games;
       case HomeBottomBarType.profile:
         return Icons.person;
-      case HomeBottomBarType.setting:
-        return Icons.settings;
     }
   }
 }
 
 class BottomBarTools {
   static const _bottomBarTypeList = HomeBottomBarType.values;
-  static const defaultBottomBarType = HomeBottomBarType.notice;
+  static const defaultBottomBarType = HomeBottomBarType.search;
 
   static int indexOfBottomBarType(HomeBottomBarType type) {
     return _bottomBarTypeList.indexOf(type);
@@ -80,7 +62,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   late final ValueNotifier<int> _currentBottomBarIndexNotifier = ValueNotifier(
-      BottomBarTools.indexOfBottomBarType(HomeBottomBarType.notice));
+      BottomBarTools.indexOfBottomBarType(HomeBottomBarType.search));
 
   Widget _buildBottomBarItem(
       int index, bool isSelected, HomeBottomBarType type) {
@@ -94,26 +76,39 @@ class _HomeWidgetState extends State<HomeWidget> {
           }
         },
         child: Container(
-          color:
-              isSelected ? AppColors.primaryColor(context) : Colors.transparent,
+          color: Colors.transparent,
           child: Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(type.icon,
-                    size: 30,
+                Container(
+                  padding: const EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.primaryColor(context)
+                        : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    type.icon,
+                    size: 20,
                     color: isSelected
                         ? AppColors.onPrimaryColor(context)
-                        : AppColors.onSurfaceColor(context)),
+                        : AppColors.onSurfaceColor(context),
+                  ),
+                ),
+                const SizedBox(height: 1),
                 Text(
                   type.displayName,
                   style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: isSelected
-                          ? AppColors.onPrimaryColor(context)
-                          : AppColors.onSurfaceColor(context)),
+                    fontSize: 10,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected
+                        ? AppColors.primaryColor(context)
+                        : AppColors.onSurfaceColor(context),
+                  ),
                 ),
               ],
             ),
@@ -128,11 +123,8 @@ class _HomeWidgetState extends State<HomeWidget> {
     final isSelected = _currentBottomBarIndexNotifier.value == index;
     switch (type) {
       // 将来这里可以走不通的tab构造逻辑，比如中心的按钮比较大
-      case HomeBottomBarType.notice:
       case HomeBottomBarType.search:
-      case HomeBottomBarType.game:
       case HomeBottomBarType.profile:
-      case HomeBottomBarType.setting:
         return _buildBottomBarItem(
           index,
           isSelected,
@@ -149,9 +141,9 @@ class _HomeWidgetState extends State<HomeWidget> {
             .map((type) => _buildBottomNavigationBarOfType(type))
             .toList();
         return BottomAppBar(
-          padding: EdgeInsets.zero, // 去掉默认的padding
+          padding: EdgeInsets.zero,
           color: AppColors.backgroundColor(context),
-          height: 50,
+          height: 64,
           child: Row(
             children: bottomBarItems,
           ),
@@ -161,19 +153,13 @@ class _HomeWidgetState extends State<HomeWidget> {
   }
 
   final _tabWidgetKeys = [
-    GlobalKey<NoticeWidgetState>(),
     GlobalKey<SearchWidgetState>(),
-    GlobalKey<GameWidgetState>(),
     GlobalKey<ProfileWidgetState>(),
-    GlobalKey<SettingWidgetState>(),
   ];
   List<Widget> _tabWidgetList() {
     return [
-      NoticeWidget(key: _tabWidgetKeys[0]),
-      SearchWidget(key: _tabWidgetKeys[1]),
-      GameWidget(key: _tabWidgetKeys[2]),
-      ProfileWidget(key: _tabWidgetKeys[3]),
-      SettingWidget(key: _tabWidgetKeys[4]),
+      SearchWidget(key: _tabWidgetKeys[0]),
+      ProfileWidget(key: _tabWidgetKeys[1]),
     ];
   }
 

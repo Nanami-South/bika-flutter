@@ -16,30 +16,58 @@ class ComicReaderWidget extends StatefulWidget {
 
 class _ComicReaderWidgetState extends State<ComicReaderWidget> {
   ComicPictureEp? _comicPictureEp;
-  ComicPicturePages? _comicPicturePages;
+  final List<ComicPicturePageDoc> _comicPicturePages = [];
   bool _isLoading = false;
+  int _currentPage = 1;
+  int _maxPage = 1;
+  final ScrollController _scrollController = ScrollController();
 
-  void refreshComicData(String comicId, int episodeId) async {
-    if (_isLoading) {
+  Future<void> _onScrollChanged() async {
+    // BikaLogger().d(
+    //     'Scroll position: ${_scrollController.position.pixels}, max: ${_scrollController.position.maxScrollExtent}');
+
+    // 如果已经滚动到底部，直接触发加载
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 100 &&
+        !_isLoading) {
+      BikaLogger().d(
+          'Triggering next page load, current page: $_currentPage, max page: $_maxPage');
+      fetchNextPage(widget.comicId, widget.episodeId);
+    }
+  }
+
+  void fetchNextPage(String comicId, int episodeId) async {
+    if (_currentPage > _maxPage) {
+      // no more content
       return;
     }
+    if (_isLoading) {
+      BikaLogger().d('Already loading, skipping');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
     try {
-      final c = await ComicsApi.comicPictureData(comicId, episodeId);
+      BikaLogger().d('Fetching page $_currentPage');
+      final c = await ComicsApi.comicPictureData(
+          comicId, episodeId, _currentPage.toString());
       if (c != null) {
         if (mounted) {
           setState(() {
             _comicPictureEp = c.ep;
-            _comicPicturePages = c.pages;
+            _comicPicturePages.addAll(c.pages.docs);
+            _maxPage = c.pages.pages;
+            _currentPage++;
+            BikaLogger().d('Successfully loaded page, new max page: $_maxPage');
           });
         }
       } else {
         BikaLogger().e('fetch comic picture data is null, id=$comicId');
       }
     } catch (e) {
-      BikaLogger().e(e.toString());
+      BikaLogger().e('Error loading page: ${e.toString()}');
     } finally {
       if (mounted) {
         setState(() {
@@ -52,7 +80,15 @@ class _ComicReaderWidgetState extends State<ComicReaderWidget> {
   @override
   void initState() {
     super.initState();
-    refreshComicData(widget.comicId, widget.episodeId);
+    BikaLogger().d('Initializing ComicReaderWidget');
+    fetchNextPage(widget.comicId, widget.episodeId);
+    _scrollController.addListener(_onScrollChanged);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScrollChanged);
+    super.dispose();
   }
 
   @override
@@ -67,15 +103,26 @@ class _ComicReaderWidgetState extends State<ComicReaderWidget> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (_comicPictureEp == null || _comicPicturePages == null) {
-      return const Center(child: Text('获取漫画章节数据失败'));
+    if (_comicPictureEp == null) {
+      if (_isLoading) {
+        return const Center(child: CircularProgressIndicator());
+      } else {
+        return const Center(child: Text('获取漫画章节数据失败'));
+      }
     } else {
       return ListView.builder(
-        itemCount: _comicPicturePages!.docs.length,
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: _comicPicturePages.length + 1,
         itemBuilder: (context, index) {
-          final imageUrl = _comicPicturePages!.docs[index].media.imageUrl();
+          if (index == _comicPicturePages.length) {
+            if (_isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              return const Center(child: Text('没有更多了'));
+            }
+          }
+          final imageUrl = _comicPicturePages[index].media.imageUrl();
           return Container(
             constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width,
