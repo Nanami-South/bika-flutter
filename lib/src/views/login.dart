@@ -2,8 +2,10 @@ import 'package:bika/src/api/login.dart';
 import 'package:bika/src/base/logger.dart';
 import 'package:bika/src/model/account.dart';
 import 'package:bika/src/views/toast.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:bika/src/theme/color.dart';
+import 'package:bika/src/views/register.dart';
 
 class LoginWidget extends StatelessWidget {
   static const String routeName = '/login';
@@ -13,7 +15,7 @@ class LoginWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Login Page'),
+        title: const Text('登录'),
         centerTitle: true,
         backgroundColor: AppColors.backgroundColor(context),
         surfaceTintColor: AppColors.backgroundColor(context),
@@ -32,13 +34,29 @@ class LoginBodyWidget extends StatefulWidget {
 }
 
 class _LoginWidgetState extends State<LoginBodyWidget> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _passwordVisuable = false;
+  bool _loginButtonBusy = false;
+
   @override
   void initState() {
     super.initState();
+    // 从路由参数中获取账号密码
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final args =
+          ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+      if (args != null) {
+        _usernameController.text = args['username'] ?? '';
+        _passwordController.text = args['password'] ?? '';
+      }
+    });
   }
 
   @override
   void dispose() {
+    _usernameController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -56,16 +74,18 @@ class _LoginWidgetState extends State<LoginBodyWidget> {
                 const SizedBox(height: 16),
                 _buildPasswordInputWidget(context),
                 const SizedBox(height: 16),
-                _buildLoginButtonWidget(context),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildRegisterButtonWidget(context),
+                    const SizedBox(width: 32),
+                    _buildLoginButtonWidget(context),
+                  ],
+                ),
+                const SizedBox(height: 16),
               ],
             )));
   }
-
-  final TextEditingController _usernameController =
-      TextEditingController(text: Account.shared.currentAccount?.userName);
-  final TextEditingController _passwordController =
-      TextEditingController(text: Account.shared.currentAccount?.password);
-  bool _passwordVisuable = false;
 
   Widget _buildUsernameInputWidget(BuildContext context) {
     return TextField(
@@ -92,15 +112,40 @@ class _LoginWidgetState extends State<LoginBodyWidget> {
     );
   }
 
-  bool _loginButtonBusy = false;
+  Widget _buildRegisterButtonWidget(BuildContext context) {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        side: BorderSide(color: Theme.of(context).colorScheme.primary),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+      ),
+      onPressed: () async {
+        final result = await Navigator.push(
+          context,
+          CupertinoPageRoute(
+            builder: (context) => const RegisterWidget(),
+          ),
+        );
+        if (result != null) {
+          _usernameController.text = result['username'] ?? '';
+          _passwordController.text = result['password'] ?? '';
+        }
+      },
+      child: const Text("注册账号"),
+    );
+  }
+
   Widget _buildLoginButtonWidget(BuildContext context) {
     return ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Theme.of(context).colorScheme.onPrimary,
-          foregroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor: Theme.of(context).colorScheme.onPrimary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
         ),
         onPressed: _loginButtonBusy
             ? null
@@ -131,7 +176,7 @@ class _LoginWidgetState extends State<LoginBodyWidget> {
                   if (!mounted) return;
                   BikaLogger().e(e.toString());
                   // toast hint
-                  GlobalToast.show("login failed", debugMessage: e.toString());
+                  GlobalToast.show("登录失败", debugMessage: e.toString());
                 } finally {
                   if (mounted) {
                     setState(() {
@@ -140,6 +185,6 @@ class _LoginWidgetState extends State<LoginBodyWidget> {
                   }
                 }
               },
-        child: const Text("login"));
+        child: const Text("登录"));
   }
 }

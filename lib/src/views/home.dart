@@ -177,27 +177,21 @@ class _HomeWidgetState extends State<HomeWidget> {
   @override
   Widget build(BuildContext context) {
     //super.build(context);
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => Account.shared),
-      ],
-      child: Consumer<Account>(builder: (context, account, child) {
-        if (!account.isValidLogin()) {
-          // 本地没有登陆的token状态，退出到登陆页面
-          return const Scaffold(body: LoginWidget());
-        }
-        return Scaffold(
-          resizeToAvoidBottomInset:
-              true, // 弹出软键盘的时候，自动调节body区域的高度，使得底部高度刚好为键盘的高度
-          bottomNavigationBar: _buildBottomNavigationBar(context),
-          body: GestureDetector(
-            onTap: () {
-              FocusScope.of(context).unfocus();
-            },
-            child: _buildBody(context),
-          ),
-        );
-      }),
-    );
+    return Consumer<Account>(builder: (context, account, child) {
+      if (!account.isValidLogin()) {
+        // 本地没有登陆的token状态，退出到登陆页面
+        return const Scaffold(body: LoginWidget());
+      }
+      return Scaffold(
+        resizeToAvoidBottomInset: true, // 弹出软键盘的时候，自动调节body区域的高度，使得底部高度刚好为键盘的高度
+        bottomNavigationBar: _buildBottomNavigationBar(context),
+        body: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus();
+          },
+          child: _buildBody(context),
+        ),
+      );
+    });
   }
 }

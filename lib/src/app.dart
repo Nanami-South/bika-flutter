@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'package:bika/src/model/account.dart';
 import 'package:bika/src/views/login.dart';
+import 'package:bika/src/views/register.dart';
 import 'package:bika/src/views/home.dart';
 
 final GlobalKey<NavigatorState> gNavigatorKey = GlobalKey<NavigatorState>();
@@ -53,6 +54,8 @@ class _BikaAppState extends State<BikaApp> {
                 switch (routeSettings.name) {
                   case LoginWidget.routeName:
                     return const LoginWidget();
+                  case RegisterWidget.routeName:
+                    return const RegisterWidget();
                   case HomeWidget.routeName:
                   default:
                     return _home;
