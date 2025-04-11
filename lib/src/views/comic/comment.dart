@@ -764,82 +764,118 @@ class _ReplyCommentListPageWidgetState
               borderRadius: BorderRadius.circular(2),
             ),
           ),
+          // 添加回退箭头
+          AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.black),
+              onPressed: () => Navigator.pop(context),
+            ),
+            title: Text(
+              '${widget.comment.commentsCount ?? 0}条回复',
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ),
           // 原始的被回复的评论
           CommentListCardWidget(
             comment: widget.comment,
             canBeReplied: false,
             onLikeChanged: widget.onLikeChanged,
           ),
-          // 标题栏
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Text(
-                  '${widget.comment.commentsCount ?? 0}条回复',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
           // 回复列表
           Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              itemCount: _replyCommentDocList.length + 1,
-              itemBuilder: (context, index) {
-                if (index >= _replyCommentDocList.length) {
-                  if (!_isLoadingList && _lastLoadingListError) {
-                    return Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          const Text("加载失败，可能是网络问题"),
-                          const SizedBox(height: 8),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                _lastLoadingListError = false;
-                              });
-                              fetchNextPage();
-                            },
-                            child: const Text("重试"),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  if (_isLoadingList) {
-                    return Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          const CircularProgressIndicator(),
-                          const SizedBox(height: 8),
-                          Text(
-                            "正在加载第 $_currentPage 页...",
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }
-
-                return CommentListCardWidget(
-                  comment: _replyCommentDocList[index],
-                  canBeReplied: false,
-                  onLikeChanged: widget.onLikeChanged,
-                );
-              },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 标题
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    '回复列表',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                // 列表内容
+                if (_isLoadingList && _replyCommentDocList.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                else if (_replyCommentDocList.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Text('暂无回复'),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemBuilder: (context, index) {
+                        if (index >= _replyCommentDocList.length) {
+                          if (!_isLoadingList && _lastLoadingListError) {
+                            return Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  const Text("加载失败，可能是网络问题"),
+                                  const SizedBox(height: 8),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _lastLoadingListError = false;
+                                      });
+                                      fetchNextPage();
+                                    },
+                                    child: const Text("重试"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          if (_isLoadingList) {
+                            return Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  const CircularProgressIndicator(),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "正在加载第 $_currentPage 页...",
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }
+                        return CommentListCardWidget(
+                          comment: _replyCommentDocList[index],
+                          canBeReplied: false,
+                          onLikeChanged: widget.onLikeChanged,
+                        );
+                      },
+                      itemCount: _replyCommentDocList.length + 1,
+                    ),
+                  ),
+              ],
             ),
           ),
         ],
